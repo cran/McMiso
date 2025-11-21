@@ -1,0 +1,20 @@
+Package: McMiso
+Type: Package
+Title: Multicore Multivariable Isotonic Regression
+Version: 0.1.2
+Authors@R: person("Cheung", "Ken", email = "yc632@cumc.columbia.edu", role = c("aut", "cre"))
+Description: The goal of 'McMiso' is to provide functions for isotonic regression when there are multiple independent 
+	variables.  The functions solve the optimization problem using recursion and leverage parallel computing to improve
+	speed, and are useful for situations with relatively large number of covariates.  The estimation method follows the
+	projective Bayes solution described in Cheung and Diaz (2023) <doi:10.1093/jrsssb/qkad014>.  
+Depends: R (>= 4.0.0)
+Imports: dplyr, future (>= 1.33.0), stats
+License: GPL-3
+Encoding: UTF-8
+RoxygenNote: 7.3.2
+NeedsCompilation: no
+Packaged: 2025-11-18 15:48:18 UTC; yingkuencheung
+Author: Cheung Ken [aut, cre]
+Maintainer: Cheung Ken <yc632@cumc.columbia.edu>
+Repository: CRAN
+Date/Publication: 2025-11-21 15:40:08 UTC
