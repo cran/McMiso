@@ -2,28 +2,45 @@
 % Please edit documentation in R/fun.R
 \name{predict.pbc}
 \alias{predict.pbc}
-\title{S3 predict method for class "pbc"}
+\title{Predict Method for Projective Bayes Classifier}
 \usage{
 \method{predict}{pbc}(object, Xnew, ...)
 }
 \arguments{
-\item{object}{object of class "pbc"}
+\item{object}{a fitted object of class \code{"pbc"}, produced by
+\code{\link{PBclassifier}}.}
 
-\item{Xnew}{numeric matrix of inputs}
+\item{Xnew}{a numeric matrix of new feature combinations to classify, with
+the same number of columns as the training data.}
 
-\item{...}{additional arguments (not used)}
+\item{...}{additional arguments (not used).}
 }
 \value{
-List containing predictions
+A list containing the following components:
+  \describe{
+    \item{fit}{a numeric vector of predicted classifications (1 = event,
+      0 = no event, \code{NA} = indeterminate) for each row of \code{Xnew}}
+    \item{msg}{a character vector describing how each prediction was obtained:
+      \code{"exact match"} for training combinations, \code{"bound from below"}
+      or \code{"bound from above"} for combinations classified by monotonicity
+      constraints, and \code{"Unsure - need more training data"} for
+      indeterminate cases}
+  }
 }
 \description{
-S3 predict method for class "pbc"
+Generates predictions from a fitted projective Bayes classifier for new
+feature combinations. Exact matches to training feature combinations are
+classified directly from the fitted classifier. For unobserved feature
+combinations, monotonicity constraints are used to impute the classification
+when the new combination is bounded from above or below by training
+combinations with a determinate classification. Combinations that cannot
+be classified by monotonicity constraints alone are flagged as indeterminate.
 }
 \examples{
 A <- as.matrix(expand.grid(rep(list(0:1), 6)))
 set.seed(2025)
-X <- A[sample(nrow(A),size=500, replace = TRUE),]
-y <- as.numeric(rowSums(X)>=3)
-fit <- PBclassifier(X,y)
-predict(fit,X)
+X <- A[sample(nrow(A), size=500, replace=TRUE),]
+y <- as.numeric(rowSums(X) >= 3)
+fit <- PBclassifier(X, y)
+predict(fit, X)
 }

@@ -2,28 +2,57 @@
 % Please edit documentation in R/fun.R
 \name{PBclassifier}
 \alias{PBclassifier}
-\title{Probabilistic Bayesian classifier}
+\title{Multivariable Isotonic Classification using Projective Bayes}
 \usage{
-PBclassifier(X, y, method = "DU", a0 = 0.25, b0 = 0.25, t0 = 0.5)
+PBclassifier(X, y, method = "DU", a0 = 0.5, b0 = 0.5, t0 = 0.5)
 }
 \arguments{
-\item{X}{numeric matrix of doses}
+\item{X}{a numeric matrix of observed feature combinations, one row per
+observation, where repeated rows are expected. Each column represents a
+feature (e.g., a dose component or experimental factor) and each row
+represents the feature combination observed for one unit.}
 
-\item{y}{numeric response vector}
+\item{y}{a binary numeric vector of length \code{nrow(X)} indicating the
+observed outcome for each observation (1 = event, 0 = no event).}
 
-\item{method}{character, either "DU" or "UD"}
+\item{method}{a character string specifying the search strategy for finding
+the optimal monotone classification, either \code{"DU"} (down-up) or
+\code{"UD"} (up-down). Defaults to \code{"DU"}.}
 
-\item{a0}{numeric, prior alpha}
+\item{a0}{a positive numeric value specifying the shape1 hyperparameter of
+the Beta prior in the Beta-Binomial conjugate model. Defaults to 0.5
+(Jeffreys prior).}
 
-\item{b0}{numeric, prior beta}
+\item{b0}{a positive numeric value specifying the shape2 hyperparameter of
+the Beta prior in the Beta-Binomial conjugate model. Defaults to 0.5
+(Jeffreys prior).}
 
-\item{t0}{numeric, threshold}
+\item{t0}{a numeric value in (0,1) specifying the threshold on the response
+rate used to classify each feature combination as event or no-event.
+Defaults to 0.5.}
 }
 \value{
-A list with class "pbc"
+A list of class \code{"pbc"} containing the following components:
+  \describe{
+    \item{alldoses}{a numeric matrix of unique feature combinations}
+    \item{M}{a numeric vector of observation counts at each feature combination}
+    \item{S}{a numeric vector of event counts at each feature combination}
+    \item{yhat}{a binary numeric vector of the optimal monotone classification
+      for each feature combination (1 = event, 0 = no event)}
+    \item{pt}{a numeric vector of posterior probabilities that the true response
+      rate exceeds \code{t0} at each feature combination}
+    \item{logH}{the log posterior probability of the optimal classification}
+  }
 }
 \description{
-Probabilistic Bayesian classifier
+Estimates a monotone binary classification rule for multivariate features
+using a projective Bayes classifier. The classifier is obtained by projecting
+an unconstrained nonparametric Bayes estimator onto the partial ordering
+subspace defined by the assumption that the outcome probability is
+nondecreasing in each feature. The projection is computed using a recursive
+sequential update algorithm that yields the exact Bayes solution maximizing
+the posterior gain. Both a down-up (\code{"DU"}) and an up-down (\code{"UD"})
+algorithm are available.
 }
 \examples{
 A <- as.matrix(expand.grid(rep(list(0:1), 6)))
@@ -33,7 +62,10 @@ y <- as.numeric(rowSums(X)>=3)
 PBclassifier(X,y)
 }
 \references{
-Cheung YK, Diaz KM. Monotone response surface of multi-factor condition: estimation and Bayes classifiers. 
-*J R Stat Soc Series B Stat Methodol.* 2023 Apr;85(2):497-522. 
+Cheung YK, Diaz KM. Monotone response surface of multi-factor condition: estimation and Bayes classifiers.
+\emph{J R Stat Soc Series B Stat Methodol.} 2023 Apr;85(2):497-522.
 doi: 10.1093/jrsssb/qkad014. Epub 2023 Mar 22. PMID: 38464683; PMCID: PMC10919322.
+
+Cheung YK, Kuhn L. Evaluating multiplex diagnostic test using partially ordered Bayes classifier.
+\emph{Ann Appl Stat.} In press.
 }

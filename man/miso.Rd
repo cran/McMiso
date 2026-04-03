@@ -2,32 +2,58 @@
 % Please edit documentation in R/fun.R
 \name{miso}
 \alias{miso}
-\title{Fit Bayesian misclassification model (binary)}
+\title{Multivariable Isotonic Regression for Binary Data using Inverse Projective Bayes}
 \usage{
 miso(X, y, incr = 0.01)
 }
 \arguments{
-\item{X}{numeric matrix}
+\item{X}{a numeric matrix of observed feature combinations, one row per
+observation, where repeated rows are expected. Each column represents a
+feature (e.g., a dose component or experimental factor) and each row
+represents the feature combination observed for one unit.}
 
-\item{y}{numeric response vector}
+\item{y}{a binary numeric vector of length \code{nrow(X)} indicating the
+observed outcome for each observation (1 = event, 0 = no event).}
 
-\item{incr}{numeric, increment for threshold grid}
+\item{incr}{a numeric value in (0,1) specifying the increment between
+threshold grid points used to invert the classifier. Smaller values
+yield finer resolution at the cost of increased computation time.
+Defaults to 0.01.}
 }
 \value{
-A list containing fitted parameters
+A list containing the following components:
+  \describe{
+    \item{alldoses}{a numeric matrix of unique feature combinations observed
+      in the training data}
+    \item{M}{a numeric vector of observation counts at each feature combination}
+    \item{S}{a numeric vector of event counts at each feature combination}
+    \item{thetahat}{a numeric vector of estimated response probabilities at
+      each unique feature combination, monotone nondecreasing with respect
+      to the partial ordering of the features}
+    \item{nt}{an integer giving the number of threshold grid points used,
+      equal to \code{round(1/incr) + 1}}
+    \item{logH}{a numeric vector of length \code{nt} giving the log posterior
+      gain of the optimal classification at each threshold grid point}
+  }
 }
 \description{
-Fit Bayesian misclassification model (binary)
+Estimates the underlying response probability for multivariate features
+using an inverse projective Bayes approach. The estimator is obtained by
+inverting the projective Bayes classifier across a grid of thresholds,
+yielding a monotone nonparametric estimate of the response probability
+that is nondecreasing in each feature. A Beta-Binomial conjugate model
+is used to compute posterior probabilities at each threshold.
 }
 \examples{
 A <- as.matrix(expand.grid(rep(list(0:1), 6)))
 set.seed(2025)
-X <- A[sample(nrow(A),size=500, replace = TRUE),]
-y <- as.numeric(rowSums(X)>=3)
-miso(X,y)
+X <- A[sample(nrow(A), size=500, replace=TRUE),]
+y <- as.numeric(rowSums(X) >= 3)
+miso(X, y)
 }
 \references{
-Cheung YK, Diaz KM. Monotone response surface of multi-factor condition: estimation and Bayes classifiers. 
-*J R Stat Soc Series B Stat Methodol.* 2023 Apr;85(2):497-522. 
+Cheung YK, Diaz KM. Monotone response surface of multi-factor condition:
+estimation and Bayes classifiers.
+\emph{J R Stat Soc Series B Stat Methodol.} 2023 Apr;85(2):497-522.
 doi: 10.1093/jrsssb/qkad014. Epub 2023 Mar 22. PMID: 38464683; PMCID: PMC10919322.
 }
